@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_docling import DoclingLoader
 from langchain_huggingface import HuggingFaceEmbeddings
+from app.config import Config
 
 
 class Chunks(DoclingLoader):
@@ -11,12 +12,8 @@ class Chunks(DoclingLoader):
         super().__init__(file_path=file_path)
 
         # Initialize tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        )
-        self.embedder = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        )
+        self.tokenizer = AutoTokenizer.from_pretrained(Config.EMBEDDING_MODEL)
+        self.embedder = HuggingFaceEmbeddings(model_name=Config.EMBEDDING_MODEL)
 
         # Initialize text splitter
         self.text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
@@ -26,14 +23,14 @@ class Chunks(DoclingLoader):
         )
 
     def process_documents(self):
-        """Generator function to yield chunks from the document."""
+        """Generator function to yield document from the document."""
         doc_iter = self.lazy_load()
         for doc in doc_iter:
             chunks = self.text_splitter.split_text(doc.page_content)
             yield chunks
 
     def print_chunks(self):
-        """Method to print all chunks for readability."""
+        """Method to print all document for readability."""
         for chunks in self.process_documents():
             for chunk in chunks:
                 print(chunk)
@@ -50,7 +47,7 @@ if __name__ == "__main__":
     # Instantiate the Chunks class
     try:
         chunks_loader = Chunks(file_path=str(DOCUMENTS_DIR / "data.docx"))
-        # Optionally print the chunks
+        # Optionally print the document
         chunks_loader.print_chunks()
     except FileNotFoundError:
         print(f"File not found: {DOCUMENTS_DIR / 'data.docx'}")

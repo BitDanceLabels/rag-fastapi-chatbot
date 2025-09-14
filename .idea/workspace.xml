@@ -5,21 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b377b5e4-6e40-46de-b913-c5b40f7e0926" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/db_vector/db.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/embedings/store_embedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db_vector/dependency.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db_vector/model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db_vector/session.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/doc_processing/services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/document_storage/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/tests/test_doc_processing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/vector_embedding/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/collection/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collection/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/search_embedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/collection/output.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collection/pdf_collection.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/collection/w2t.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/embedding/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/embedding/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/sentence_embeddings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/embedding/vector_store.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llm/embedding/chroma_langchain_db/chroma.sqlite3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/split_text/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/split_text/sliptters.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/db.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/embedings/chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/chunks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/embedings/evaluate_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/evaluate_embedding.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/embedings/search_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/search_embedding.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/embedings/store_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedings/add_in_db.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,42 +47,53 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests in services.py.executor": "Run",
+    "Python tests.Python tests in test_doc_processing.py.executor": "Run",
     "Python.chunks.executor": "Run",
+    "Python.config.executor": "Run",
     "Python.db.executor": "Run",
     "Python.evaluate_embedding.executor": "Run",
     "Python.llm_model.executor": "Run",
     "Python.metric.executor": "Run",
+    "Python.model.executor": "Run",
     "Python.pdf_collection.executor": "Run",
+    "Python.quickstart.executor": "Run",
+    "Python.routes.executor": "Debug",
     "Python.search_embedding.executor": "Run",
     "Python.sentence_embeddings.executor": "Run",
+    "Python.services.executor": "Run",
+    "Python.session.executor": "Run",
     "Python.store_embedding.executor": "Run",
     "Python.test.executor": "Run",
+    "Python.upload.executor": "Run",
     "Python.vector_store.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/haonguyen/Desktop/chatbot/document",
+    "last_opened_file_path": "/Users/haonguyen/Desktop/chatbot/app/drive",
     "settings.editor.selected.configurable": "com.jetbrains.python.black.configuration.BlackFormatterConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/drive" />
       <recent name="$PROJECT_DIR$/document" />
       <recent name="$PROJECT_DIR$/collection" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/app/chunks" />
       <recent name="$PROJECT_DIR$/app/embedings" />
       <recent name="$PROJECT_DIR$/app/db_vector" />
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/documents" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-1bde30d8e611-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.130" />
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
       </set>
     </attachedChunks>
   </component>

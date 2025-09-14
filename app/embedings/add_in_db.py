@@ -2,12 +2,17 @@ from pathlib import Path
 
 from app.embedings.chunks import Chunks
 from app.embedings.sentence_embeddings import Embeddings
-from app.db_vector.db import get_conn
+from app.db_vector.session import get_conn
+
+
+class AddInDb:
+    
 
 def store_embeddings(chunks_loader, embedder, db_url):
     conn = get_conn(db_url)
+    cur = conn.cursor()
     try:
-        with conn.cursor() as cur:
+        with cur.copy("COPY document (embedding) FROM STDIN WITH (FORMAT BINARY)") as copy:
             for chunks in chunks_loader.process_documents():
                 for i, chunk in enumerate(chunks):
                     # Generate embedding
@@ -16,10 +21,10 @@ def store_embeddings(chunks_loader, embedder, db_url):
 
                     # Insert into database
                     cur.execute(
-                        "INSERT INTO chunks (content, embedding) VALUES (%s, %s)",
+                        "INSERT INTO document (content, embedding) VALUES (%s, %s)",
                         (chunk, vector),
                     )
-                print(f"Inserted {len(chunks)} chunks into database.")
+                print(f"Inserted {len(chunks)} document into database.")
     except Exception as e:
         print(f"Error storing embeddings: {e}")
         raise
@@ -32,7 +37,7 @@ if __name__ == "__main__":
         # Database URL
         DB_URL = "postgresql://haonguyen:matkhau@localhost:5432/postgres"
 
-        # Initialize chunks and embeddings
+        # Initialize document and embeddings
         CURRENT_DIR = Path(__file__).resolve().parent
         DOCUMENTS_DIR = CURRENT_DIR.parent.parent / "document"
         file_path = DOCUMENTS_DIR / "data.docx"
