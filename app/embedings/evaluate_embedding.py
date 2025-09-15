@@ -17,12 +17,12 @@ def semantic_search(query: str, _chunks_loader: Chunks, embedder: Embeddings, db
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT content, embedding <=> %s AS distance FROM chunks ORDER BY distance LIMIT %s",
+                "SELECT content, embedding <=> %s AS distance FROM document ORDER BY distance LIMIT %s",
                 (np.array(embedding), top_k)
             )
             results = cur.fetchall()
             if not results:
-                print("No results found in database. Check if 'chunks' table is populated.")
+                print("No results found in database. Check if 'document' table is populated.")
                 return []
             # Format results as similarity (1 - distance)
             formatted_results = [
@@ -59,42 +59,6 @@ def evaluate_embeddings(embedder: Embeddings):
             "Embedding evaluation: FAIL (dissimilar sentences have higher similarity)"
         )
 
-
-def evaluate_semantic_search(chunks_loader: Chunks, embedder: Embeddings, db_url: str):
-    # Test queries with expected relevant content
-    test_cases = [
-        {
-            "query": "Tôi muốn thực hiện thanh toán",
-            "expected_content_contains": ["tại các điểm giao dịch của QUATEST3", "118000004544"],
-        },
-        {
-            "query": "Máy học và trí tuệ nhân tạo",
-            "expected_content_contains": ["máy học", "trí tuệ nhân tạo"],
-        },
-    ]
-
-    for test in test_cases:
-        query = test["query"]
-        expected = test["expected_content_contains"]
-        results = semantic_search(query, chunks_loader, embedder, db_url, top_k=3)
-
-        print(f"\nEvaluating query: {query}")
-        if not results:
-            print("No results returned. Check database or query.")
-            continue
-
-        # Check if results contain expected terms
-        relevant_results = 0
-        for result in results:
-            if any(term.lower() in result["text"].lower() for term in expected):
-                relevant_results += 1
-                print(
-                    f"Relevant result: {result['text'][:100]}... (Score: {result['score']:.4f})"
-                )
-
-        precision = relevant_results / len(results) if results else 0
-        print(f"Precision@3: {precision:.4f}")
-
 if __name__ == "__main__":
     try:
         # Initialize
@@ -113,12 +77,8 @@ if __name__ == "__main__":
         print("\nEvaluating embedding quality:")
         evaluate_embeddings(embedder)
 
-        # Evaluate semantic search
-        print("\nEvaluating semantic search performance:")
-        evaluate_semantic_search(chunks_loader, embedder, db_url)
-
         # Perform semantic search
-        query = "Tôi muốn gửi mẫu đến trung tâm 3"
+        query = "Tôi muốn thanh toán"
         results = semantic_search(query, chunks_loader, embedder, db_url, top_k=3)
 
         # Print results
