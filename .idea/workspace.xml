@@ -5,22 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b377b5e4-6e40-46de-b913-c5b40f7e0926" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/load_data/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/load_data/services.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/db_vector/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/db_vector/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/session.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/db_vector/session.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/doc_processing/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/doc_processing/services.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/embedings/add_in_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/embedings/add_in_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/embedings/chunks.py" beforeDir="false" afterPath="$PROJECT_DIR$/embedings/chunks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/embedings/evaluate_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/embedings/evaluate_embedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/embedings/search_embedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/embedings/search_embedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/embedings/sentence_embeddings.py" beforeDir="false" afterPath="$PROJECT_DIR$/embedings/sentence_embeddings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/rag/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/rag/model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/rag/retriever.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrate/versions/73da50354e90_update_index.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrate/versions/f0769256bbba_create_metadata_table_for_upload_file.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/document_storage/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/document_storage/services.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,18 +27,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "haontuhcmut"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;haontuhcmut&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:haontuhcmut/chatbot.git",
-    "accountId": "a8e8bd74-b8ab-4ff9-a803-17ddb654a5a8"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:haontuhcmut/chatbot.git&quot;,
+    &quot;accountId&quot;: &quot;a8e8bd74-b8ab-4ff9-a803-17ddb654a5a8&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
