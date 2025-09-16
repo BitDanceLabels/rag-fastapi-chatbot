@@ -14,8 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 EMBEDDING_MODEL = Config.EMBEDDING_MODEL
-DATABASE_URL = Config.DATABASE_URL
-
+PSYCOPG_CONNECT = Config.PSYCOPG_CONNECT
 
 class DocProcessing(DoclingLoader):
     """Class to split token from file, chunk it."""
@@ -78,9 +77,7 @@ class DocProcessing(DoclingLoader):
             if not Path(file_path).exists():
                 raise ValueError(f"File not found: {file_path}")
 
-            with psycopg.connect(
-                "dbname=vector_db user=haonguyen password=matkhau123 host=localhost port=5432"
-            ) as conn:
+            with psycopg.connect(PSYCOPG_CONNECT) as conn:
                 register_vector(conn)
                 with conn.cursor() as cur:
 
