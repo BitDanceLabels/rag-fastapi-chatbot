@@ -9,3 +9,5 @@ app/db_vector/__pycache__/
 credentials.json
 token.json
 .idea/workspace.xml
+__pycache__/
+*.pyc
