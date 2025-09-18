@@ -8,6 +8,7 @@ from app.config import Config
 from typing import Optional, Dict, Any
 import psycopg
 from pgvector.psycopg import register_vector
+import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -179,19 +180,19 @@ if __name__ == "__main__":
     cur.execute(
         """
             BEGIN;
-            SET LOCAL hnsw.ef_search = 100;
+            SET LOCAL hnsw.ef_search = 40;
             COMMIT;
         """
     )
 
     cur.execute(
-        "SELECT * FROM items ORDER BY embedding <-> %s LIMIT 3",
+        "SELECT * FROM item ORDER BY embedding <-> %s LIMIT 3",
         (embedding_np,),
     )
 
     results = cur.fetchall()
 
-    context = "\n\n".join([row[0] for row in results])
+    context = "\n\n".join([row[1] for row in results])
 
     print(context)
 
