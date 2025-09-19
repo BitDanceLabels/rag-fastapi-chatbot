@@ -42,7 +42,11 @@ def generate_prompt_with_context(
     messages_to_pass = [
         AIMessage(content="Tôi có thể giúp gì được cho bạn?"),
         HumanMessage(
-            content=f"Dữ liệu truy vấn:{query_result}\nCâu hỏi của người dùng: {user_query}"
+            content=f"""
+            Dữ liệu truy vấn: {query_result}
+            \nCâu hỏi của người dùng: {user_question}
+            \nXem dữ liệu truy vấn chọn ngữ cảnh phù hợp hoặc tóm tắt ngữ cảnh
+            \nCuối cùng trả lời ngắn gọn cho khách hàng lịch sự chuyên nghiệp, nếu không biết thì trả lời tôi không biết"""
         ),
     ]
 
@@ -55,8 +59,5 @@ if __name__ == "__main__":
     # # Test the function
     user_question = "Giới thiệu về trung tâm 3"
 
-    # formatted_prompt = generate_prompt_with_context(user_question)
-    # print(formatted_prompt)
-
-    re = search_service.mmr_search(query=user_question, lambda_mult=0.7)
-    print(re)
+    formatted_prompt = generate_prompt_with_context(user_question, k=3)
+    print(formatted_prompt)
