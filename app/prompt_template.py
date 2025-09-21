@@ -24,9 +24,9 @@ def generate_prompt_with_context(
     user_question: str,
     k: int = 4,
     distance_function: str = str("<=>"),  # as cosine similarity
-    hnsw_ef_search: int = 100,
-    fetch_k: int = 20,
-    lambda_mult: float = 0.5,
+    hnsw_ef_search: int = 40,
+    fetch_k: int = 30,
+    lambda_mult: float = 0.7,
 ):
     # Get query data
     query_result = search_service.mmr_search(
@@ -45,8 +45,9 @@ def generate_prompt_with_context(
             content=f"""
             Dữ liệu truy vấn: {query_result}
             \nCâu hỏi của người dùng: {user_question}
-            \nXem dữ liệu truy vấn chọn ngữ cảnh phù hợp hoặc tóm tắt ngữ cảnh
-            \nCuối cùng trả lời ngắn gọn cho khách hàng lịch sự chuyên nghiệp, nếu không biết thì trả lời tôi không biết"""
+            \nXem dữ liệu truy vấn chọn ngữ cảnh phù hợp và tóm tắt ngữ cảnh
+            \nTrả lời cho khách hàng lịch sự chuyên nghiệp 
+            \nNếu dữ liệu truy vấn không có thông tin liên quan thì trả lời tôi không biết"""
         ),
     ]
 
@@ -57,7 +58,7 @@ def generate_prompt_with_context(
 
 if __name__ == "__main__":
     # # Test the function
-    user_question = "Giới thiệu về trung tâm 3"
+    user_question = "phạm vi hoạt động hoặc lịch làm việc của Quatest 3"
 
-    formatted_prompt = generate_prompt_with_context(user_question, k=3)
+    formatted_prompt = generate_prompt_with_context(user_question)
     print(formatted_prompt)

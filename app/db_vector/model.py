@@ -19,7 +19,7 @@ class Item(SQLModel, table=True):
     """
     id: int | None = Field(default=None, primary_key=True)
     content: str | None = Field(default=None, sa_column=sa.Column(Text))
-    embedding: Any | None = Field(sa_column=sa.Column(Vector(384)))
+    embedding: Any | None = Field(sa_column=sa.Column(Vector(768)))
 
 # Create index
 index = Index(

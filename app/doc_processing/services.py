@@ -24,15 +24,15 @@ class DocProcessing(DoclingLoader):
 
     def __init__(
         self,
-        model: str | None = str("sentence-transformers/all-MiniLM-L6-v2"),
-        chunk_size: int | None = 256,
+        model: str | None = str("google/embeddinggemma-300M"),
+        chunk_size: int | None = 512,
         chunk_overlap: int | None = 50,
         model_kwargs: Optional[Dict[str, Any]] = None,
         encode_kwargs: Optional[Dict[str, Any]] = None,
     ):
 
         if model_kwargs is None:
-            model_kwargs = {"device": "cpu"}
+            model_kwargs = {"device": "cpu", "local_files_only": True}
         if encode_kwargs is None:
             encode_kwargs = {"normalize_embeddings": True}
 
@@ -43,7 +43,7 @@ class DocProcessing(DoclingLoader):
             local_files_only=True,  # Loading and manage your cache by huggingface cli (recommendation)
         )
         self.embedder = HuggingFaceEmbeddings(
-            model_name=model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+            model_name=model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs,
         )
 
         # Initialize text splitter
@@ -75,27 +75,8 @@ class DocProcessing(DoclingLoader):
             logger.error(f"Error encoding texts: {str(e)}")
 
     def load_data(self, file_path: str) -> None:
-        """Loads a file, splits it into chunks, generates embeddings, and inserts them into a PostgreSQL database.
+        """Loads a file, splits it into chunks, generates embeddings, and inserts them into a PostgreSQL database."""
 
-        Flow:
-        1. Validates the input file path.
-        2. Connects to PostgreSQL and registers the pgvector extension.
-        3. Splits the file into chunks using a autotoken splitter.
-        4. Cleans chunks to remove unnecessary characters.
-        5. Generates embeddings for all chunks in a single batch.
-        6. Optionally converts embeddings to NumPy arrays for processing.
-        7. Inserts chunks and embeddings into the database using binary COPY.
-        8. Logs the number of chunks processed and handles errors.
-
-        Args:
-            file_path (str): Path to the input text file.
-
-        Raises:
-            ValueError: If the file does not exist.
-            psycopg.ProgrammingError: For database programming errors.
-            psycopg.Error: For general database errors.
-            Exception: For unexpected errors.
-        """
         try:
             from pathlib import Path
 
@@ -162,45 +143,8 @@ class DocProcessing(DoclingLoader):
 
 if __name__ == "__main__":
 
-    document_processing_service = DocProcessing()
+    document_processing_service = DocProcessing(model="google/embeddinggemma-300M", chunk_size=512, chunk_overlap=50)
 
     base_dir = Path(__file__).resolve().parent.parent
     file_path = base_dir.parent / "document/data.pdf"
     document_processing_service.load_data(file_path)
-
-    # # ---------------------SEARCH------------------------------
-    # text = "tôi muốn tham gia thử nghiệm thành thạo thì làm như thế nào"
-    # embedding = document_processing_service.encode(texts=text)
-    # embedding_query = np.array(embedding, dtype=np.float32)  # Convert to NumPy array
-    #
-    # conn = psycopg.connect(PSYCOPG_CONNECT, autocommit=True)
-    # register_vector(conn)
-    #
-    # cur = conn.cursor()
-    #
-    # cur.execute(
-    #     """
-    #         BEGIN;
-    #         SET LOCAL hnsw.ef_search = 100;
-    #         COMMIT;
-    #     """
-    # )
-    #
-    # cur.execute(
-    #     "SELECT * FROM item ORDER BY embedding <-> %s LIMIT 20",
-    #     (embedding_query,),
-    # )
-    #
-    # results = cur.fetchall()
-    #
-    # embeddings = [np.array(row[2], dtype=float) for row in results]
-    #
-    # embedding_list = np.vstack(embeddings)
-    #
-    # indices = maximal_marginal_relevance(
-    #     embedding_query, embedding_list, k=3, lambda_mult=0.7
-    # )
-    # final_docs = [results[i] for i in indices]
-    # content = [doc[1] for doc in final_docs]
-    # context = "\n".join(content)
-    # print(context)

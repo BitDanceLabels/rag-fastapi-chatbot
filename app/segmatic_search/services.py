@@ -20,8 +20,8 @@ class SearchService(DocProcessing):
         self,
         query: str,
         distance_function: str = str("<=>"),  # <=> cosine distance in pgvector
-        hnsw_ef_search: int = 100,
-        top_k: int = 5,
+        hnsw_ef_search: int = 40,
+        top_k: int = 4,
     ) -> Any:
         try:
             embedding = self.encode(texts=query)
@@ -55,9 +55,9 @@ class SearchService(DocProcessing):
         query: str,
         k: int = 4,
         distance_function: str = str("<=>"),  # as cosine similarity
-        hnsw_ef_search: int = 100,
-        fetch_k: int = 20,
-        lambda_mult: float = 0.5,
+        hnsw_ef_search: int = 40,
+        fetch_k: int = 30,
+        lambda_mult: float = 0.7,
     ) -> Any:
         """Calculate maximal marginal relevance."""
 
@@ -88,7 +88,7 @@ class SearchService(DocProcessing):
 
 if __name__ == "__main__":
     search_service = SearchService(db=PSYCOPG_CONNECT, vector_table="item")
-    text = "giới thiệu về trung tâm 3"
+    text = "tôi muốn xin báo giá thử nghiệm vi sinh tổng số vi sinh vật"
 
     results_1 = search_service.search(text)
     content_1 = [row[1] for row in results_1]
