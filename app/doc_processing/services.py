@@ -92,7 +92,7 @@ class DocProcessing(DoclingLoader):
                     chunk_count = 0
 
                     with cur.copy(
-                        "COPY item (content, embedding) FROM STDIN WITH (FORMAT BINARY)"
+                        "COPY embedding (content, embedding) FROM STDIN WITH (FORMAT BINARY)"
                     ) as copy:
                         copy.set_types(["text", "vector"])
 

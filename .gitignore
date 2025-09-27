@@ -7,3 +7,4 @@ token.json
 .idea/workspace.xml
 !**/__pycache__/
 *.pyc
+*.rdb
