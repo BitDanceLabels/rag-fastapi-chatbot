@@ -94,15 +94,15 @@ class SimpleRedisHistory(BaseChatMessageHistory):
 #######Testing#######
 
 #Test the implementation
-history = SimpleRedisHistory(session_id="3f2ff077-3dd6-4563-946a-ddef10ffce1e", redis_url="redis://localhost:6379")
+#history = SimpleRedisHistory(session_id="3f2ff077-3dd6-4563-946a-ddef10ffce1e", redis_url="redis://localhost:6379")
 
 # #Add messages
 # history.add_message(HumanMessage(content="Hello, AI!"))
 # history.add_message(AIMessage(content="Hello, human! How can I assist you today?"))# Retrieve all messages
 
-messages = history.messages
-for message in messages:
-    print(f"{message.type}: {message.content}")
+# messages = history.messages
+# for message in messages:
+#     print(f"{message.type}: {message.content}")
 
-# # Clear the history for the session
-# history.clear()
+# Clear the history for the session
+#history.clear()
