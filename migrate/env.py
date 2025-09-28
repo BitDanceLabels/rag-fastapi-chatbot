@@ -5,12 +5,12 @@ from sqlalchemy import pool
 
 from alembic import context
 from sqlmodel import SQLModel
-from app.db_vector.model import (
-    Item
+from app.core.model import (
+    Embedding, Chat, Message, User
 )
 from app.config import Config
 
-database_url = Config.DATABASE_URL
+database_url = Config.DATABASE_URL_PSYCOPG_DRIVER
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

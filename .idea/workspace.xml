@@ -1,118 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="b377b5e4-6e40-46de-b913-c5b40f7e0926" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/chain/services.py" afterDir="false" />
+    <list default="true" id="cc41442b-a38f-4c7c-96f7-829dc51f9c28" name="Changes" comment="handled conflict">
+      <change afterPath="$PROJECT_DIR$/app/core/dependency.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/core/session.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/llm_model/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/message/schema.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/message/services.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/migrate/versions/a5d2ac5f8d30_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/chatbot.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/chain/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/chain/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/chat_message_history/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/chat_message_history/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/dependency.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db_vector/session.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/doc_processing/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/doc_processing/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/llm_model/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/llm_model/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/prompt_template.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/segmatic_search/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedding_search/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/segmatic_search/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/embedding_search/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llm/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/message/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/llm/llm_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrate/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrate/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrate/versions/f53d5cdc12a7_init_vector_db.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;haontuhcmut&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:haontuhcmut/chatbot.git&quot;,
-    &quot;accountId&quot;: &quot;a8e8bd74-b8ab-4ff9-a803-17ddb654a5a8&quot;
-  }
-}</component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 2
-}</component>
-  <component name="ProjectId" id="31yE27dJDO7ZOCINeAUr7UZiyUy" />
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.chunks.executor": "Run",
-    "Python.db.executor": "Run",
-    "Python.evaluate_embedding.executor": "Run",
-    "Python.llm_model.executor": "Run",
-    "Python.metric.executor": "Run",
-    "Python.pdf_collection.executor": "Run",
-    "Python.prompt_template.executor": "Run",
-    "Python.search_embedding.executor": "Run",
-    "Python.sentence_embeddings.executor": "Run",
-    "Python.services.executor": "Run",
-    "Python.store_embedding.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.vector_store.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/haonguyen/Desktop/chatbot/document",
-    "settings.editor.selected.configurable": "com.jetbrains.python.black.configuration.BlackFormatterConfigurable"
+    "git-widget-placeholder": "Merging main"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/document" />
-      <recent name="$PROJECT_DIR$/collection" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/app" />
-      <recent name="$PROJECT_DIR$/app/embedings" />
-      <recent name="$PROJECT_DIR$/app/db_vector" />
-      <recent name="$PROJECT_DIR$/documents" />
-    </key>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-python-sdk-8753aad8314d-d902c0275401-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-252.25557.178" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="b377b5e4-6e40-46de-b913-c5b40f7e0926" name="Changes" comment="" />
-      <created>1756487702094</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1756487702094</updated>
-    </task>
-    <task id="LOCAL-00001">
-      <option name="closed" value="true" />
-      <created>1757913635718</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1757913635718</updated>
-    </task>
-    <task id="LOCAL-00002">
-      <option name="closed" value="true" />
-      <created>1758222306574</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1758222306574</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="conflict" />
+    <MESSAGE value="handled conflict" />
+    <option name="LAST_COMMIT_MESSAGE" value="handled conflict" />
   </component>
 </project>

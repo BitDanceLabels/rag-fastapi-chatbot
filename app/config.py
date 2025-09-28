@@ -6,11 +6,14 @@ BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR.parent / ".env"
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
+    DATABASE_URL_ASYNCPG_DRIVER: str
+    DATABASE_URL_PSYCOPG_DRIVER: str
     PSYCOPG_CONNECT: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+
+    REDIS_URL: str
 
     EMBEDDING_MODEL: str
 

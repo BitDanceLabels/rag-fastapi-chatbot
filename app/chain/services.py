@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import ChatOllama
 from app.chat_message_history.services import SimpleRedisHistory
-from app.segmatic_search.services import SearchService
+from app.embedding_search.services import SearchService
 from app.config import Config
 
 search_service = SearchService(db=Config.PSYCOPG_CONNECT, vector_table="item")
@@ -34,3 +34,4 @@ prompt.invoke(
         "question": "now multiply that by 4",
     }
 )
+print(prompt)
