@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+    MINIO_URL: str
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+    BUCKET_NAME: str
 
     SECRET_KEY: str
     SALT: str
