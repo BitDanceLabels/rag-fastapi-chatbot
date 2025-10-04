@@ -54,7 +54,7 @@ class DocumentService:
             raise
 
         return UploadResponse(
-            file_path=object_path,
+            object_path=object_path,
             file_name=file_name,
             file_size=file_size,
             content_type=content_type,

@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 from sqlmodel import SQLModel
 from app.core.model import (
-    Embedding, Chat, Message, User
+    Embedding, Chat, Message, User, KnowledgeBase, Chunk, Document
 )
 from app.config import Config
 

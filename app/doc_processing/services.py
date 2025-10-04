@@ -1,6 +1,4 @@
 import logging
-
-from sympy import preview
 from transformers import AutoTokenizer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_docling import DoclingLoader
@@ -144,24 +142,24 @@ class DocProcessing(DoclingLoader):
         return text.strip()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    document_processing_service = DocProcessing(
-        model="google/embeddinggemma-300M", chunk_size=512, chunk_overlap=50
-    )
+    # document_processing_service = DocProcessing(
+    #     model="google/embeddinggemma-300M", chunk_size=512, chunk_overlap=50
+    # )
 
     # base_dir = Path(__file__).resolve().parent.parent
     # file_path = base_dir.parent / "document/data.pdf"
     # document_processing_service.load_data(file_name)
 
-    from pydantic import BaseModel
-
-    class Chunk(BaseModel):
-        content: str
-
-    collect_chunks = document_processing_service.load_and_split(
-        "/var/folders/6t/v83d99117854dgl8q81766tr0000gn/T/tmplsqye9eq.pdf"
-    )
-
-    all_chunks = [Chunk(content=chunk) for chunk in collect_chunks]
-    print(all_chunks)
+    # from pydantic import BaseModel
+    #
+    # class Chunk(BaseModel):
+    #     content: str
+    #
+    # collect_chunks = document_processing_service.load_and_split(
+    #     "/var/folders/6t/v83d99117854dgl8q81766tr0000gn/T/tmplsqye9eq.pdf"
+    # )
+    #
+    # all_chunks = [Chunk(content=chunk) for chunk in collect_chunks]
+    # print(all_chunks)

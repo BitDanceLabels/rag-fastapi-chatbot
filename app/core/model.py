@@ -10,6 +10,7 @@ from sqlalchemy import DateTime, func
 
 class Embedding(SQLModel, table=True):
     """
+    CREATE EXTENSION IF NOT EXISTS vector;
     CREATE TABLE Embedding (
     id BIGSERIAL NOT NULL,
     content TEXT,
@@ -20,7 +21,7 @@ class Embedding(SQLModel, table=True):
     CREATE INDEX embedding_idx ON item USING hnsw (embedding vector_l2_ops);
     """
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    content: str | None = Field(default=None, sa_column=sa.Column(Text))
+    chunks_id: UUID = Field(default=None, index=True, foreign_key="chunk.id")
     embedding: Any | None = Field(sa_column=sa.Column(Vector(768)))
     document_id: UUID = Field(default=None, foreign_key="document.id", nullable=False)
     created_at: datetime = Field(
@@ -32,7 +33,7 @@ class Embedding(SQLModel, table=True):
         )
     )
 
-    document: Optional["Document"] = Relationship(back_populates="embeddings")
+    chunk: Optional["Chunk"] = Relationship(back_populates="embedding")
 
 
 # Create index for embedding table
@@ -65,13 +66,14 @@ class User(SQLModel, table=True):
 
     chat: list["Chat"] = Relationship(back_populates="user")
     documents: list["Document"] = Relationship(back_populates="user")
+    chunks: list["Chunk"] = Relationship(back_populates="user")
+    knowledge_base: list["KnowledgeBase"] = Relationship(back_populates="user")
 
 
 class KnowledgeBase(SQLModel, table=True):
     __tablename__ = "knowledge_base"
 
-    id: UUID
-    Field(default_factory=uuid4, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(default=None, max_length=255, nullable=False)
     description: str | None = Field(default=None, max_length=1024)
     user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
@@ -84,18 +86,20 @@ class KnowledgeBase(SQLModel, table=True):
         )
     )
 
-    documents: list["Document"] = Relationship(back_populates="kbs")
+    documents: list["Document"] = Relationship(back_populates="knowledge_base")
+    user: User | None = Relationship(back_populates="knowledge_base")
 
 
 class Document(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    knowledge_base_id: UUID = Field(default=None, foreign_key="knowledge_base.id", nullable=False)
     file_path: str = Field(default=None, max_length=255)
     file_file: str = Field(default=None, max_length=255)
     file_size: int = Field(default=None, nullable=False)
     content_type: str = Field(default=None, max_length=128)
     file_hash: str = Field(default=None, index=True, max_length=64)
-    status: str = Field(sa_column=Column(server_default="pending", nullable=False))
+    status: str = Field(default="pending", nullable=False)
     created_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now())
     )
@@ -105,9 +109,29 @@ class Document(SQLModel, table=True):
         )
     )
 
-    embeddings: list[Embedding] = Relationship(back_populates="document", cascade_delete=True)
+    chunks: list["Chunk"] = Relationship(back_populates="documents", cascade_delete=True)
     user: Optional[User] = Relationship(back_populates="documents")
-    kbs: Optional["KnowledgeBase"] = Relationship(back_populates="documents")
+    knowledge_base: Optional["KnowledgeBase"] = Relationship(back_populates="documents")
+
+class Chunk(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    document_id: UUID = Field(default=None, foreign_key="document.id", nullable=False)
+    content: str = Field(default=None, max_length=1024)
+    status: str = Field(default="pending", nullable=False)
+    created_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), server_default=func.now())
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        )
+    )
+
+    user: User | None = Relationship(back_populates="chunks")
+    documents: list["Document"] = Relationship(back_populates="chunks")
+    embedding: Embedding | None = Relationship(back_populates="chunk")
+
 
 class Chat(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)

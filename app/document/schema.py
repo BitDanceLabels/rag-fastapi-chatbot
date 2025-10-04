@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-
+from uuid import UUID
 
 class UploadResponse(BaseModel):
-    file_path: str
+    object_path: str
     file_name: str
     file_size: int
     content_type: str
@@ -10,4 +10,7 @@ class UploadResponse(BaseModel):
 
 
 class ChunkResponse(BaseModel):
+    id: UUID
     content: str
+
+
