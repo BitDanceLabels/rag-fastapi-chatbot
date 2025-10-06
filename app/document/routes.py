@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, status
 from app.document.schema import DocumentDBResponse, ChunkPreviewResponse
 from app.document.services import DocumentService
 
@@ -36,3 +36,8 @@ async def preview_document(document_id: str, session: SessionDep):
         document_id=document_id, session=session
     )
     return paginate(file)
+
+@document_router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_document(doc_id: str, session: SessionDep):
+    doc = await document_services.delete_document(doc_id, session)
+    return doc

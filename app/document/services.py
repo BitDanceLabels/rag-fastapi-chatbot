@@ -2,6 +2,7 @@ import logging
 import tempfile
 import hashlib
 from fastapi import UploadFile, HTTPException
+from fastapi.responses import JSONResponse
 
 from app.document.schema import (
     DocumentDBResponse,
@@ -17,7 +18,8 @@ from app.core.model import Document
 from uuid import UUID
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import apaginate
-from sqlmodel import desc, select, insert
+from sqlmodel import desc, select
+from minio.error import MinioException
 
 
 logger = logging.getLogger(__name__)
@@ -41,6 +43,22 @@ class DocumentService:
             setattr(doc, key, value)
         await session.commit()
         return doc
+
+    async def delete_document(self, doc_id: str, session: AsyncSession):
+        doc = await self.get_document(doc_id, session)
+
+        minio_client = get_minio_client()
+
+        try:
+            minio_client.remove_object(Config.BUCKET_NAME, doc.object_path)
+            logger.info(f"Object {doc.object_path}' deleted successfully")
+        except MinioException as e:
+            logger.error(f"MinIO cleanup error: {str(e)}")
+
+        await session.delete(doc)
+        await session.commit()
+        logger.info(f"Document {doc.id}' deleted successfully")
+        return None
 
     async def upload_document(
         self, file: UploadFile, kb_id: str, user_id: str, session: AsyncSession
@@ -115,3 +133,4 @@ class DocumentService:
             )
             temp_path = temp_file.name
         return temp_path
+

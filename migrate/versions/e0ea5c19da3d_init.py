@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 02e42f982e10
+Revision ID: e0ea5c19da3d
 Revises: 
-Create Date: 2025-10-04 15:16:58.953797
+Create Date: 2025-10-06 12:43:33.448966
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '02e42f982e10'
+revision: str = 'e0ea5c19da3d'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -47,21 +47,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('document',
-    sa.Column('id', sa.Uuid(), nullable=False),
-    sa.Column('user_id', sa.Uuid(), nullable=False),
-    sa.Column('file_path', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
-    sa.Column('file_file', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
-    sa.Column('file_size', sa.Integer(), nullable=False),
-    sa.Column('content_type', sqlmodel.sql.sqltypes.AutoString(length=128), nullable=False),
-    sa.Column('file_hash', sqlmodel.sql.sqltypes.AutoString(length=64), nullable=False),
-    sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_document_file_hash'), 'document', ['file_hash'], unique=False)
     op.create_table('knowledge_base',
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
@@ -72,18 +57,23 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('chunk',
+    op.create_table('document',
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('user_id', sa.Uuid(), nullable=False),
-    sa.Column('document_id', sa.Uuid(), nullable=False),
-    sa.Column('content', sqlmodel.sql.sqltypes.AutoString(length=1024), nullable=False),
+    sa.Column('knowledge_base_id', sa.Uuid(), nullable=False),
+    sa.Column('object_path', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
+    sa.Column('file_name', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
+    sa.Column('file_size', sa.Integer(), nullable=False),
+    sa.Column('content_type', sqlmodel.sql.sqltypes.AutoString(length=128), nullable=False),
+    sa.Column('file_hash', sqlmodel.sql.sqltypes.AutoString(length=64), nullable=False),
     sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['document_id'], ['document.id'], ),
+    sa.ForeignKeyConstraint(['knowledge_base_id'], ['knowledge_base.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_document_file_hash'), 'document', ['file_hash'], unique=False)
     op.create_table('message',
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('content', sa.Text(), nullable=False),
@@ -94,33 +84,46 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['chat_id'], ['chat.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('chunk',
+    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('user_id', sa.Uuid(), nullable=False),
+    sa.Column('document_id', sa.Uuid(), nullable=False),
+    sa.Column('content', sqlmodel.sql.sqltypes.AutoString(length=1024), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.ForeignKeyConstraint(['document_id'], ['document.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('embedding',
     sa.Column('id', sa.Uuid(), nullable=False),
-    sa.Column('chunks_id', sa.Uuid(), nullable=False),
-    sa.Column('embedding', pgvector.sqlalchemy.vector.VECTOR(dim=768), nullable=True),
+    sa.Column('user_id', sa.Uuid(), nullable=False),
+    sa.Column('chunk_id', sa.Uuid(), nullable=False),
+    sa.Column('vector', pgvector.sqlalchemy.vector.VECTOR(dim=768), nullable=True),
     sa.Column('document_id', sa.Uuid(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['chunks_id'], ['chunk.id'], ),
+    sa.ForeignKeyConstraint(['chunk_id'], ['chunk.id'], ),
     sa.ForeignKeyConstraint(['document_id'], ['document.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_embedding_chunks_id'), 'embedding', ['chunks_id'], unique=False)
-    op.create_index('sqlmodel_index', 'embedding', ['embedding'], unique=False, postgresql_using='hnsw', postgresql_with={'m': 16, 'ef_construction': 64}, postgresql_ops={'embedding': 'vector_l2_ops'})
+    op.create_index(op.f('ix_embedding_chunk_id'), 'embedding', ['chunk_id'], unique=False)
+    op.create_index('sqlmodel_index', 'embedding', ['vector'], unique=False, postgresql_using='hnsw', postgresql_with={'m': 16, 'ef_construction': 64}, postgresql_ops={'vector': 'vector_l2_ops'})
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index('sqlmodel_index', table_name='embedding', postgresql_using='hnsw', postgresql_with={'m': 16, 'ef_construction': 64}, postgresql_ops={'embedding': 'vector_l2_ops'})
-    op.drop_index(op.f('ix_embedding_chunks_id'), table_name='embedding')
+    op.drop_index('sqlmodel_index', table_name='embedding', postgresql_using='hnsw', postgresql_with={'m': 16, 'ef_construction': 64}, postgresql_ops={'vector': 'vector_l2_ops'})
+    op.drop_index(op.f('ix_embedding_chunk_id'), table_name='embedding')
     op.drop_table('embedding')
-    op.drop_table('message')
     op.drop_table('chunk')
-    op.drop_table('knowledge_base')
+    op.drop_table('message')
     op.drop_index(op.f('ix_document_file_hash'), table_name='document')
     op.drop_table('document')
+    op.drop_table('knowledge_base')
     op.drop_table('chat')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
