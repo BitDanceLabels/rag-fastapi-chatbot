@@ -2,8 +2,6 @@ import logging
 import tempfile
 import hashlib
 from fastapi import UploadFile, HTTPException
-from fastapi.responses import JSONResponse
-
 from app.document.schema import (
     DocumentDBResponse,
     CreateDocumentDB,

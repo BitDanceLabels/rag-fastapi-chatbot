@@ -1,6 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.responses import JSONResponse
-from app.doc_processing.services import DocProcessing
+from app.utility.doc_processor import DocProcessor
 from app.core.model import Chunk
 from sqlmodel import select
 from fastapi import HTTPException
@@ -12,7 +12,7 @@ from uuid import UUID, uuid4
 import logging
 
 PSYCOPG_CONNECT = Config.PSYCOPG_CONNECT
-doc_processor = DocProcessing()
+doc_processor = DocProcessor()
 logger = logging.getLogger(__name__)
 
 

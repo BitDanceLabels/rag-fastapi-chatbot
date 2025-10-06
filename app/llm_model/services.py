@@ -4,11 +4,11 @@ from langchain_ollama import ChatOllama
 from sqlmodel.ext.asyncio.session import AsyncSession
 from langchain_core.prompts import MessagesPlaceholder
 from uuid import UUID
-from app.embedding_search.services import SearchService
+from app.searching.services import SearchService
 from app.config import Config
 from app.message.services import MessageService
 from app.message.schema import MessageSchema
-from app.chat_message_history.services import SimpleRedisHistory
+from app.message_history.services import SimpleRedisHistory
 import logging
 import re
 

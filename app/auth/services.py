@@ -4,8 +4,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi import status
 from fastapi.responses import JSONResponse
 from datetime import timedelta
-from sqlalchemy.exc import SQLAlchemyError
-
 
 from app.auth.schema import (
     CreateUserModel,
@@ -22,7 +20,7 @@ from app.error import (
     UseNotFound,
     IncorrectEmailOrPassword,
 )
-from app.auth.utility.security import (
+from app.utility.security import (
     encode_url_safe_token,
     get_hashed_password,
     decode_url_safe_token,

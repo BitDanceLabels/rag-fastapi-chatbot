@@ -1,4 +1,4 @@
-from app.doc_processing.services import DocProcessing
+from app.utility.doc_processor import DocProcessor
 from app.config import Config
 import psycopg
 from pgvector.psycopg import register_vector
@@ -10,7 +10,7 @@ from langchain_community.vectorstores.utils import maximal_marginal_relevance
 PSYCOPG_CONNECT = Config.PSYCOPG_CONNECT
 
 
-class SearchService(DocProcessing):
+class SearchService(DocProcessor):
     def __init__(self, db: str, vector_table: str):
         super().__init__()
         self.db = db
@@ -95,6 +95,6 @@ if __name__ == "__main__":
     print("This is result 1:")
     print("\n".join(content_1))
 
-    results_2 = search_service.mmr_search(query=text)
-    print("This is result 2:")
-    print(results_2)
+    # results_2 = search_service.mmr_search(query=text)
+    # print("This is result 2:")
+    # print(results_2)

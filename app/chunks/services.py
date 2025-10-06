@@ -1,7 +1,7 @@
 from app.document.services import DocumentService
 from sqlmodel.ext.asyncio.session import AsyncSession
 from pathlib import Path
-from app.doc_processing.services import DocProcessing
+from app.utility.doc_processor import DocProcessor
 from app.chunks.schema import CreateChunk, ChunkResponse
 from app.document.schema import UpdateDocumentDB
 from uuid import UUID
@@ -14,7 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 document_service = DocumentService()
-document_processing_services = DocProcessing()
+document_processor = DocProcessor()
 
 
 class ChunkService:
@@ -26,12 +26,12 @@ class ChunkService:
             temp_path = await document_service.download_doc_to_tmp_local(
                 doc.object_path
             )
-            collect_chunks = document_processing_services.load_and_split(
+            collect_chunks = document_processor.load_and_split(
                 file_path=temp_path
             )
 
             all_chunks = [
-                document_processing_services._clean_text(chunk)
+                document_processor._clean_text(chunk)
                 for chunk in collect_chunks
                 if chunk.strip()
             ]

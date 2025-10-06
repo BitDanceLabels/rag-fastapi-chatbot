@@ -15,7 +15,7 @@ from app.auth.schema import (
 from app.core.dependency import SessionDep
 from app.auth.services import UserService
 from app.auth.dependency import get_current_user, RefreshTokenBearer, AccessTokenBearer
-from app.auth.utility.security import create_access_token
+from app.utility.security import create_access_token
 from app.core.redis import add_jti_blocklist
 
 user_service = UserService()
