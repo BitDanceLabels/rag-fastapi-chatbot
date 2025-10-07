@@ -1,16 +1,23 @@
 from app.knownledge_base.schema import CreateKnowledgeBase, KnowledgeBaseResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
-from app.core.model import KnowledgeBase, Document
+from app.core.model import KnowledgeBase
 from uuid import UUID
-from fastapi import HTTPException
-from sqlmodel import desc, select, delete
+from fastapi import HTTPException, Depends
+from sqlmodel import desc, select
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import apaginate
+from typing import Annotated
+from app.auth.schema import UserModel
 
 
 class KnownledgeBaseService:
-    async def create_knowledge_base(self, new_kb: CreateKnowledgeBase, session: AsyncSession):
+    async def create_knowledge_base(
+            self,
+            user: UserModel,
+            new_kb: CreateKnowledgeBase,
+            session: AsyncSession):
         data_dict = new_kb.model_dump()
+        data_dict["username"] = user.username
         new_kb = KnowledgeBase(**data_dict)
         session.add(new_kb)
         await session.commit()
@@ -38,4 +45,3 @@ class KnownledgeBaseService:
         await session.delete(kb_item)
         await session.commit()
         return None
-

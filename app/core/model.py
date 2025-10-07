@@ -21,7 +21,7 @@ class Embedding(SQLModel, table=True):
     CREATE INDEX embedding_idx ON item USING hnsw (embedding vector_l2_ops);
     """
     id: int = Field(default=None, primary_key=True)
-    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    username: str = Field(default=None, nullable=False)
     chunk_id: UUID = Field(default=None, foreign_key="chunk.id", nullable=False, index=True)
     vector: Any | None = Field(sa_column=sa.Column(Vector(768)))
     document_id: UUID = Field(default=None, foreign_key="document.id", nullable=False)
@@ -35,7 +35,7 @@ class Embedding(SQLModel, table=True):
     )
 
     chunk: Optional["Chunk"] = Relationship(back_populates="embedding")
-    user: Optional["User"] = Relationship(back_populates="embedding")
+    username: str = Field(default=None, nullable=False)
 
 
 # Create index for embedding table
@@ -66,20 +66,13 @@ class User(SQLModel, table=True):
         )
     )
 
-    chats: list["Chat"] = Relationship(back_populates="user")
-    documents: list["Document"] = Relationship(back_populates="user")
-    chunks: list["Chunk"] = Relationship(back_populates="user")
-    knowledge_base: list["KnowledgeBase"] = Relationship(back_populates="user")
-    embedding: list["Embedding"] = Relationship(back_populates="user")
-
-
 class KnowledgeBase(SQLModel, table=True):
     __tablename__ = "knowledge_base"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(default=None, max_length=255, nullable=False)
     description: str | None = Field(default=None, max_length=1024)
-    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    username: str = Field(default=None, nullable=False)
     created_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now())
     )
@@ -90,12 +83,10 @@ class KnowledgeBase(SQLModel, table=True):
     )
 
     documents: list["Document"] = Relationship(back_populates="knowledge_base", cascade_delete=True)
-    user: User | None = Relationship(back_populates="knowledge_base")
-
 
 class Document(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    username: str = Field(default=None, nullable=False)
     knowledge_base_id: UUID = Field(default=None, foreign_key="knowledge_base.id", nullable=False)
     object_path: str = Field(default=None, max_length=255)
     file_name: str = Field(default=None, max_length=255)
@@ -113,12 +104,11 @@ class Document(SQLModel, table=True):
     )
 
     chunks: list["Chunk"] = Relationship(back_populates="documents", cascade_delete=True)
-    user: Optional[User] = Relationship(back_populates="documents")
     knowledge_base: Optional["KnowledgeBase"] = Relationship(back_populates="documents")
 
 class Chunk(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    username: str = Field(default=None, nullable=False)
     document_id: UUID = Field(default=None, foreign_key="document.id", nullable=False)
     content: str = Field(default=None, max_length=1024, index=True)
     created_at: datetime = Field(
@@ -130,14 +120,13 @@ class Chunk(SQLModel, table=True):
         )
     )
 
-    user: User | None = Relationship(back_populates="chunks")
     documents: list["Document"] = Relationship(back_populates="chunks")
     embedding: Embedding | None = Relationship(back_populates="chunk", cascade_delete=True)
 
 
 class Chat(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(default=None, foreign_key="user.id", nullable=False)
+    username: str = Field(default=None, nullable=False)
     created_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now())
     )
@@ -146,7 +135,6 @@ class Chat(SQLModel, table=True):
             DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
         )
     )
-    user: User | None = Relationship(back_populates="chats")
     messages: list["Message"] = Relationship(back_populates="chat", cascade_delete=True)
 
 class Message(SQLModel, table=True):

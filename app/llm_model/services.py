@@ -4,7 +4,7 @@ from langchain_ollama import ChatOllama
 from sqlmodel.ext.asyncio.session import AsyncSession
 from langchain_core.prompts import MessagesPlaceholder
 from uuid import UUID
-from app.utility.search import SearchService
+from app.utility.search import SearchServices
 from app.config import Config
 from app.message.services import MessageService
 from app.message.schema import MessageSchema
@@ -13,13 +13,15 @@ import logging
 import re
 
 
-search_service = SearchService(db=Config.PSYCOPG_CONNECT, vector_table="embedding")
-message_service = MessageService()
+search_services = SearchServices(db=Config.PSYCOPG_CONNECT, vector_table="embedding")
+message_services = MessageService()
 
+# Remove thinking from llm model response
 def clean_think_tags(text: str) -> str:
     """Remove <think> and </think> tags and their contents from the text."""
     return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
+# LLM config
 llm = ChatOllama(
     model="deepseek-r1:8b",
     temperature=0.01,
@@ -44,7 +46,7 @@ async def generate_response(
 
     # Create user message in db
     chat_uuid = UUID(chat_id)
-    user_message = await message_service.create_message(
+    user_message = await message_services.create_message(
         message=MessageSchema(
             content=query,
             role="user",
@@ -65,7 +67,7 @@ async def generate_response(
     chat_history = [(m.type, m.content) for m in messages]
 
     # Get context
-    context = search_service.mmr_search(query=query)
+    context = search_services.mmr_search(query=query)
 
     # Prompt to reformulate the query
     contextualize_q_system_prompt = (
@@ -138,7 +140,7 @@ async def generate_response(
 
         # Create bot message in db
         full_response = clean_think_tags(full_response)
-        bot_message = await message_service.create_message(
+        bot_message = await message_services.create_message(
             message=MessageSchema(
                 content=full_response,
                 role="bot",

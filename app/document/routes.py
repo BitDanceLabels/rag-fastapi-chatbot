@@ -1,10 +1,10 @@
-from fastapi import APIRouter, UploadFile, status
+from fastapi import APIRouter, UploadFile, status, Depends
 from app.document.schema import DocumentDBResponse, ChunkPreviewResponse
 from app.document.services import DocumentService
-
 from fastapi_pagination import Page, paginate
 from app.core.dependency import SessionDep
-
+from app.auth.dependency import RoleChecker, AccessTokenBearer
+from typing import Annotated
 
 document_services = DocumentService()
 document_router = APIRouter()
@@ -18,7 +18,7 @@ async def get_all_documents(session: SessionDep):
 
 @document_router.post("/", response_model=list[DocumentDBResponse])
 async def upload_file(
-    files: list[UploadFile], user_id: str, kb_id: str, session: SessionDep
+        files: list[UploadFile], user_id: str, kb_id: str, session: SessionDep,
 ):
     uploaded_files = []
     for file in files:
@@ -36,6 +36,7 @@ async def preview_document(document_id: str, session: SessionDep):
         document_id=document_id, session=session
     )
     return paginate(file)
+
 
 @document_router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(doc_id: str, session: SessionDep):
