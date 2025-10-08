@@ -6,7 +6,11 @@ from sqlmodel import select, desc
 from fastapi_pagination.ext.sqlmodel import apaginate
 from uuid import UUID
 from app.auth.schema import UserModel
+from app.utility.chat_history import SimpleRedisHistory
+from app.config import Config
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ChatService:
     async def create_new_chat(self, user: UserModel, session:AsyncSession):
@@ -29,6 +33,13 @@ class ChatService:
         return result
 
     async def delete_chat(self, chat_id: str, session: AsyncSession):
+        # Step 1 delete history in cache
+        history_service = SimpleRedisHistory(
+            session_id=chat_id, redis_url=Config.REDIS_URL, ttl=3600
+        )
+        await history_service.clear()
+
+        # Step 2 delete in database
         chat = await self.get_chat_id(chat_id=chat_id, session=session)
         await session.delete(chat)
         await session.commit()

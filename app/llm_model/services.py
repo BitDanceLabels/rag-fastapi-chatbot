@@ -12,6 +12,7 @@ from app.utility.chat_history import SimpleRedisHistory
 import logging
 import re
 
+logger = logging.getLogger("__name__")
 
 search_services = SearchServices(db=Config.PSYCOPG_CONNECT, vector_table="embedding")
 message_services = MessageService()
@@ -28,9 +29,6 @@ llm = ChatOllama(
     num_predict=1024,
     validate_model_on_init=True,
 )
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("ChatResponseLogger")
 
 async def generate_response(
     query: str,
@@ -59,15 +57,15 @@ async def generate_response(
     history_service = SimpleRedisHistory(
         session_id=str(user_message.chat_id), redis_url=Config.REDIS_URL, ttl=3600
     )
-
-    history_service.add_message(HumanMessage(content=user_message.content))
+    await history_service.add_message(HumanMessage(content=user_message.content))
 
     # Get history (limit to 3 messages)
-    messages = history_service.get_messages(limit=3)
+    messages = await history_service.get_messages(limit=3)
     chat_history = [(m.type, m.content) for m in messages]
+    logger.info(f"Human message added to chat history with session_id: {chat_id} ")
 
     # Get context
-    context = search_services.mmr_search(query=query, session=session)
+    context = await search_services.mmr_search(query=query, session=session)
 
     # Prompt to reformulate the query
     contextualize_q_system_prompt = (
@@ -87,11 +85,12 @@ async def generate_response(
 
     # Prompt to generate the full response
     answer_system_prompt = (
-        "Bạn là một trợ lý AI chuyên cung cấp thông tin chính xác và chi tiết. "
+        "Bạn là một trợ lý AI chuyên cung cấp thông tin chính xác và chi tiết cho khách hàng. "
         "Dựa trên câu hỏi đã được định dạng lại, lịch sử trò chuyện, và dữ liệu tham khảo, "
         "hãy cung cấp một câu trả lời đầy đủ, chi tiết và dễ hiểu bằng tiếng Việt. "
         "Đảm bảo câu trả lời bao quát tất cả các khía cạnh liên quan đến câu hỏi, "
-        "bao gồm thông tin về tổ chức, dịch vụ, vai trò, và bất kỳ chi tiết nào khác từ dữ liệu tham khảo."
+        "Nếu không có thông tin nào thì trả lời vui lòng liên hệ "
+        "Đường dây nóng 02822212797 hoặc Email info@quatest3.com.vn để biết thêm chi tiết."
     )
     answer_prompt = ChatPromptTemplate.from_messages(
         [
@@ -123,7 +122,6 @@ async def generate_response(
                 reformulated_question += text
 
         reformulated_question = clean_think_tags(reformulated_question)
-        logger.info(f"Reformulated question: {reformulated_question}")
 
         # Step 2: Generate the full response
         full_response = ""
@@ -150,7 +148,7 @@ async def generate_response(
         )
 
         # Create bot message in history queue
-        history_service.add_message(AIMessage(content=bot_message.content))
-        logger.info(f"Added AIMessage to Redis for session_id={chat_id} | content={full_response[:50]}")
+        await history_service.add_message(AIMessage(content=bot_message.content))
+        logger.info(f"AIbot message added to chat history with session_id: {chat_id} ")
 
     return event_stream

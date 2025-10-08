@@ -1,13 +1,11 @@
-import redis
+import redis.asyncio as redis
 import json
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, messages_to_dict, messages_from_dict
 import logging
 from typing import List, Optional
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("RedisHistoryLogger")
-
+logger = logging.getLogger(__name__)
 
 class SimpleRedisHistory(BaseChatMessageHistory):
     def __init__(self, session_id: str, redis_url: str, ttl: Optional[int] = None):
@@ -26,65 +24,48 @@ class SimpleRedisHistory(BaseChatMessageHistory):
 
         self.session_id = session_id
         self.ttl = ttl
+        self.r = redis.from_url(redis_url, decode_responses=True)
+
+    async def ping(self):
         try:
-            self.r = redis.Redis.from_url(redis_url, decode_responses=True)
-            # Test connection
-            self.r.ping()
+            pong = await self.r.ping()
+            logger.info(f"Redis ping: {pong}")
+            return pong
         except redis.RedisError as e:
             logger.error(f"Failed to connect to Redis: {e}")
             raise
-        logger.info(f"Initialized RedisHistory for session_id={session_id}")
 
-    def add_message(self, message: BaseMessage) -> None:
-        """
-        Add a message to the Redis history.
-
-        Args:
-            message: The message to add
-        """
+    async def add_message(self, message: BaseMessage) -> None:
         key = f"history:{self.session_id}"
         try:
             msg_dict = messages_to_dict([message])[0]
-            self.r.rpush(key, json.dumps(msg_dict))
+            await self.r.rpush(key, json.dumps(msg_dict))
             if self.ttl:
-                self.r.expire(key, self.ttl)
-            logger.info(
-                f"Stored message in Redis | key={key} | type={message.type} | content={message.content[:50]}"
-            )
+                await self.r.expire(key, self.ttl)
         except (redis.RedisError, json.JSONEncodeError) as e:
             logger.error(f"Failed to add message: {e}")
             raise
 
-    def get_messages(self, limit: Optional[int] = None) -> List[BaseMessage]:
-        """
-        Retrieve messages from Redis history.
-
-        Args:
-            limit: Optional number of recent messages to retrieve
-
-        Returns:
-            List of BaseMessage objects
-        """
+    async def get_messages(self, limit: Optional[int] = None) -> List[BaseMessage]:
         key = f"history:{self.session_id}"
         try:
             if limit is None:
-                raw = [json.loads(m) for m in self.r.lrange(key, 0, -1)]
+                raw = [json.loads(m) for m in await self.r.lrange(key, 0, -1)]
             else:
-                raw = [json.loads(m) for m in self.r.lrange(key, -limit, -1)]
+                raw = [json.loads(m) for m in await self.r.lrange(key, -limit, -1)]
             return messages_from_dict(raw)
         except (redis.RedisError, json.JSONDecodeError) as e:
             logger.error(f"Failed to retrieve messages: {e}")
             return []
 
     @property
-    def messages(self) -> List[BaseMessage]:
+    async def messages(self) -> List[BaseMessage]:
         """Get all messages in the history."""
-        return self.get_messages()
+        return await self.get_messages()
 
-    def clear(self) -> None:
-        """Clear the session history from Redis."""
+    async def clear(self) -> None:
         try:
-            self.r.delete(f"history:{self.session_id}")
+            await self.r.delete(f"history:{self.session_id}")
             logger.info(f"Cleared history for session_id={self.session_id}")
         except redis.RedisError as e:
             logger.error(f"Failed to clear history: {e}")

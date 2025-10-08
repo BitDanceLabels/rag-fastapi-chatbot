@@ -29,7 +29,7 @@ class EmbeddingServices:
         collect_chunks = result.all()
         if not collect_chunks:
             raise HTTPException(
-                status_code=404, detail="Document not found or document do not chunking"
+                status_code=400, detail="Document must be chunked before embedding"
             )
         collect_content_chunks = [chunk.content for chunk in collect_chunks]
         collect_chunk_id = [chunk.id for chunk in collect_chunks]

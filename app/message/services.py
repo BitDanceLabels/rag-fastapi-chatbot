@@ -2,12 +2,12 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select, desc
+from sqlmodel import select, desc, delete
 from fastapi.responses import JSONResponse
+
 from app.core.model import Message
 from fastapi_pagination.ext.sqlmodel import apaginate
-from app.message.schema import MessageSchema
-
+from app.message.schema import MessageSchema, MessageResponse
 
 
 class MessageService:
@@ -15,12 +15,9 @@ class MessageService:
         statement = select(Message).order_by(desc(Message.created_at))
         return await apaginate(session, statement)
 
-    async def get_message_id(self, message_id: str, session:AsyncSession):
-        message_uuid = UUID(message_id)
-        result = await session.get(Message, message_uuid)
-        if not result:
-            raise HTTPException(status_code=404, detail="Message not found")
-        return result
+    async def get_message_from_chat_id(self, chat_id: str, session:AsyncSession):
+        statement = select(Message).where(Message.chat_id == UUID(chat_id))
+        return await apaginate(session, statement)
 
     async def create_message(self, message: MessageSchema, session:AsyncSession):
         data_dict = message.model_dump()
@@ -28,13 +25,3 @@ class MessageService:
         session.add(new_message)
         await session.commit()
         return new_message
-
-
-    async def delete_message(self, message_id: str, session:AsyncSession):
-        message = await self.get_message_id(message_id, session)
-        await session.delete(message)
-        await session.commit()
-        return JSONResponse(
-            status_code=204,
-            content={"message": "The message is deleted successfully"},
-        )

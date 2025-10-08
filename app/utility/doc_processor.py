@@ -8,7 +8,6 @@ from typing import Optional, Dict, Any
 
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 EMBEDDING_MODEL = Config.EMBEDDING_MODEL

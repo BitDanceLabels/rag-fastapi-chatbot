@@ -63,7 +63,7 @@ class SearchServices:
         except Exception as e:
             logger.error(f"Vector search failed {str(e)}")
 
-    async def mmr_search(
+    async def   mmr_search(
             self,
             query: str,
             session: AsyncSession,
