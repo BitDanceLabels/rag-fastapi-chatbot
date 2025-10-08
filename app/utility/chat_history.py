@@ -89,20 +89,3 @@ class SimpleRedisHistory(BaseChatMessageHistory):
         except redis.RedisError as e:
             logger.error(f"Failed to clear history: {e}")
             raise
-
-
-#######Testing#######
-
-#Test the implementation
-#history = SimpleRedisHistory(session_id="3f2ff077-3dd6-4563-946a-ddef10ffce1e", redis_url="redis://localhost:6379")
-
-# #Add messages
-# history.add_message(HumanMessage(content="Hello, AI!"))
-# history.add_message(AIMessage(content="Hello, human! How can I assist you today?"))# Retrieve all messages
-
-# messages = history.messages
-# for message in messages:
-#     print(f"{message.type}: {message.content}")
-
-# Clear the history for the session
-#history.clear()

@@ -8,7 +8,7 @@ from app.utility.search import SearchServices
 from app.config import Config
 from app.message.services import MessageService
 from app.message.schema import MessageSchema
-from app.message_history.services import SimpleRedisHistory
+from app.utility.chat_history import SimpleRedisHistory
 import logging
 import re
 
@@ -23,7 +23,7 @@ def clean_think_tags(text: str) -> str:
 
 # LLM config
 llm = ChatOllama(
-    model="deepseek-r1:8b",
+    model=Config.LLM_MODEL,
     temperature=0.01,
     num_predict=1024,
     validate_model_on_init=True,
@@ -67,7 +67,7 @@ async def generate_response(
     chat_history = [(m.type, m.content) for m in messages]
 
     # Get context
-    context = search_services.mmr_search(query=query)
+    context = search_services.mmr_search(query=query, session=session)
 
     # Prompt to reformulate the query
     contextualize_q_system_prompt = (

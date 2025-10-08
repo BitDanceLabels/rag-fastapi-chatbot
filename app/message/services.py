@@ -29,18 +29,12 @@ class MessageService:
         await session.commit()
         return new_message
 
-    async def update_message(self, message_id: str, data_update: MessageSchema, session:AsyncSession):
-        message = await self.get_message_id(message_id, session)
-        for key, value in data_update.items():
-             setattr(message, key, value)
-        await session.commit()
-        return message
 
     async def delete_message(self, message_id: str, session:AsyncSession):
         message = await self.get_message_id(message_id, session)
         await session.delete(message)
         await session.commit()
         return JSONResponse(
-            status_code=200,
+            status_code=204,
             content={"message": "The message is deleted successfully"},
         )

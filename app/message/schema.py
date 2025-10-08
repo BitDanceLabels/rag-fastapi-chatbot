@@ -9,7 +9,7 @@ class MessageSchema(BaseModel):
     role: str
     chat_id: UUID
 
-class MessageResponse(BaseModel):
+class MessageResponse(MessageSchema):
     id: UUID
     created_at: datetime
     updated_at: datetime
