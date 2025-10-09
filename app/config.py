@@ -9,9 +9,6 @@ class Settings(BaseSettings):
     DATABASE_URL_ASYNCPG_DRIVER: str
     DATABASE_URL_PSYCOPG_DRIVER: str
     PSYCOPG_CONNECT: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
     MINIO_URL: str
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
