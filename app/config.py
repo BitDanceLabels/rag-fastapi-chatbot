@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     BACKEND_URL: str
 
     EMBEDDING_MODEL: str
-    HUGGINGFACE_TOKEN: str
+    HF_TOKEN: str
     LLM_MODEL:str
 
     DOMAIN_NAME: str

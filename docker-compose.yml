@@ -1,6 +1,7 @@
 services:
   nginx-dev:
     image: nginx:alpine
+    container_name: nginx
     ports:
       - "80:80"
     volumes:
@@ -26,6 +27,7 @@ services:
     build:
       context: . # Dockerfile location
       dockerfile: Dockerfile
+    container_name: fastapi
     ports:
       - "8000:8000"
     env_file:
@@ -35,32 +37,105 @@ services:
     environment:
       - DEBUG=1
       - PYTHONUNBUFFERED=1
-      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      - HF_TOKEN=${HF_TOKEN}
     volumes:
       - .:/app
       - ./uploads:/app/uploads
+      - ./models:/app/models
     networks:
       - app_network
     depends_on:
       - db
       - redis
       - minio
+      - ollama
 
+    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  ollama:
+    image: ollama/ollama:latest
+    pull_policy: always
+    ports:
+      - "11435:11434"
+    env_file:
+      - .env
+    environment:
+      - LLM_MODEL=${LLM_MODEL}
+    volumes:
+      - ./models:/app/models
+    networks:
+      - app_network
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+        ollama serve && ollama pull "$LLM_MODEL" && wait
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   db:
     image: pgvector/pgvector:pg17-trixie
     container_name: pgvector-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER= ${POSTGRES_USER}
+      - POSTGRES_PASSWORD= ${POSTGRES_PASSWORD}
+      - POSTGRES_DB= ${POSTGRES_DB}
+      - TZ=Asia/Ho_Chi_Minh
     env_file:
-      - ./docker.env
+      - ./.env
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./app/db_vector/postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - psql_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    env_file:
+      - .env
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server --console-address ":9001" /data
+    networks:
+      - app_network
+
+  redis:
+    image: redis:8.2.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+     - ./:/app/
+    command:
+      - redis-server
+    networks:
+      - app_network
+
 volumes:
-  pgdata:
+  psql_data:
+  minio_data:
+
+networks:
+  app_network:
+    driver: bridge

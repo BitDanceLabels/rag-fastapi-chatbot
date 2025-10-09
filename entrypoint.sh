@@ -35,6 +35,21 @@ else
   exit 1
 fi
 
+echo "Downloading model embedding from huggingface"
+# Check if HF_TOKEN is set and log in to Hugging Face CLI
+if [ -n "$HF_TOKEN" ]; then
+    hf auth login --token $HF_TOKEN --add-to-git-credential
+else
+    echo "HF_TOKEN not set. Skipping login."
+fi
+# Download the model specified in MODEL_NAME
+if [ -n "$EMBEDDING_MODEL" ]; then
+    hf download "$EMBEDDING_MODEL" --cache-dir /app/models
+else
+    echo "EMBEDDING_MODEL not set. Exiting."
+    exit 1
+fi
+
 echo "Starting application..."
 
 if [ "$ENVIRONMENT" = "development"]; then
