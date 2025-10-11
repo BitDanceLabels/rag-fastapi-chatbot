@@ -27,13 +27,13 @@ done
 
 echo "Redis started"
 
-echo "Running Celery"
-if celery -A app.celery_task.c_app worker -l info; then
-  echo "Started Celery successfully"
-else
-  echo "Celery failed"
-  exit 1
-fi
+echo "Starting Celery in background..."
+celery -A app.celery_task.c_app worker -l info &
+CELERY_PID=$!
+echo "Celery started with PID $CELERY_PID"
+
+# Optional: Wait a bit for Celery to initialize
+sleep 5
 
 echo "Downloading model embedding from huggingface"
 # Check if HF_TOKEN is set and log in to Hugging Face CLI
@@ -44,16 +44,21 @@ else
 fi
 # Download the model specified in MODEL_NAME
 if [ -n "$EMBEDDING_MODEL" ]; then
-    hf download "$EMBEDDING_MODEL" --cache-dir /app/models
+    hf download "$EMBEDDING_MODEL" --local-dir ./huggingface
+    echo "EMBEDDING_MODEL download completed."
+    hf cache scan
 else
     echo "EMBEDDING_MODEL not set. Exiting."
     exit 1
 fi
 
-echo "Starting application..."
+echo "Starting FastAPI application..."
 
-if [ "$ENVIRONMENT" = "development"]; then
-  uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+if [ "$ENVIRONMENT" = "development" ]; then
+    uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
 else
-  uvicorn app.main:app --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 fi
+
+# Keep the script running to keep container alive (wait for background processes)
+wait $CELERY_PID

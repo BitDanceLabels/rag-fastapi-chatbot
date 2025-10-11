@@ -5,6 +5,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file
@@ -24,10 +25,6 @@ RUN chmod +x entrypoint.sh
 
 # Copy the rest of the application
 COPY . .
-
-# Create uploads directory
-RUN mkdir -p uploads
-RUN mkdir -p models
 
 # Set Python path and environment
 ENV PYTHONPATH=/app

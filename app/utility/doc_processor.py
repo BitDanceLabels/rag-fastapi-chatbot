@@ -6,13 +6,11 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from app.config import Config
 from typing import Optional, Dict, Any
 
-
 # Configure logging
 logger = logging.getLogger(__name__)
 
 EMBEDDING_MODEL = Config.EMBEDDING_MODEL
 PSYCOPG_CONNECT = Config.PSYCOPG_CONNECT
-
 
 class DocProcessor(DoclingLoader):
     """Class to split tokens from file and chunk it efficiently."""

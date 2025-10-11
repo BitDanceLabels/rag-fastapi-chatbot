@@ -1,5 +1,4 @@
 import jwt
-from jwt.exceptions import PyJWTError
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated, Any
 from fastapi import Depends, HTTPException, status
@@ -38,7 +37,7 @@ class TokenBearer:
 
         except InvalidTokenError:
             raise self.credentials_exception
-        except PyJWTError:
+        except jwt.exceptions.PyJWTError:
             raise self.credentials_exception
 
     def verify_token_data(self, payload: dict) -> None:

@@ -41,7 +41,7 @@ services:
     volumes:
       - .:/app
       - ./uploads:/app/uploads
-      - ./models:/app/models
+      - ./hf_model:/app/huggingface
     networks:
       - app_network
     depends_on:
