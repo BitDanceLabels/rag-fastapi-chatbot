@@ -5,7 +5,7 @@ from fastapi import status, HTTPException
 from fastapi.responses import JSONResponse
 from datetime import timedelta
 from uuid import UUID
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 import secrets
 from datetime import datetime
 from fastapi_pagination import Page
@@ -200,7 +200,7 @@ class UserService:
 class APIKeyServices:
     async def get_api_keys(self, user_id: UserModel, session: AsyncSession) -> Page[APIKeyResponse]:
         statement = select(APIKey).where(APIKey.user_id == user_id.id)
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def create_api_key(self, user_id: UserModel, name: str, session: AsyncSession) -> APIKeyResponse:
         api_key = APIKey(

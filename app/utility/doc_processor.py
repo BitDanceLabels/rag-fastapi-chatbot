@@ -1,8 +1,7 @@
 import logging
-from transformers import AutoTokenizer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_docling import DoclingLoader
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
 from app.config import Config
 from typing import Optional, Dict, Any
 
@@ -10,13 +9,13 @@ from typing import Optional, Dict, Any
 logger = logging.getLogger(__name__)
 
 EMBEDDING_MODEL = Config.EMBEDDING_MODEL
+OLLAMA_HOST = Config.OLLAMA_HOST
 PSYCOPG_CONNECT = Config.PSYCOPG_CONNECT
 
 class DocProcessor(DoclingLoader):
     """Class to split tokens from file and chunk it efficiently."""
 
     # Class-level cache (shared across instances). Singleton instance
-    _tokenizers: dict[str, Any] = {}
     _embedders: dict[str, Any] = {}
 
     def __init__(
@@ -27,39 +26,22 @@ class DocProcessor(DoclingLoader):
         model_kwargs: Optional[Dict[str, Any]] = None,
         encode_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        if model_kwargs is None:
-            model_kwargs = {"device": "cpu", "local_files_only": True}
-        if encode_kwargs is None:
-            encode_kwargs = {"normalize_embeddings": True}
-
-        # Load tokenizer once per model
-        if model not in DocProcessor._tokenizers:
-            logger.info(f"Loading tokenizer for {model}...")
-            DocProcessor._tokenizers[model] = AutoTokenizer.from_pretrained(
-                model,
-                use_fast=True,
-                local_files_only=True,
-            )
-
-        # Load embedder once per model
-        if model not in DocProcessor._embedders:
-            logger.info(f"Loading embedder for {model}...")
-            DocProcessor._embedders[model] = HuggingFaceEmbeddings(
-                model_name=model,
-                model_kwargs=model_kwargs,
-                encode_kwargs=encode_kwargs,
-            )
-
-        # Assign references
-        self.tokenizer = DocProcessor._tokenizers[model]
-        self.embedder = DocProcessor._embedders[model]
-
-        # Initialize text splitter
-        self.text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
-            tokenizer=self.tokenizer,
+        # Initialize text splitter (no HF tokenizer needed for Ollama embeddings)
+        self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
         )
+
+        # Load embedder once per model using Ollama
+        if model not in DocProcessor._embedders:
+            logger.info(f"Loading Ollama embedder for {model}...")
+            DocProcessor._embedders[model] = OllamaEmbeddings(
+                model=model,
+                base_url=OLLAMA_HOST,
+            )
+
+        # Assign references
+        self.embedder = DocProcessor._embedders[model]
 
     def load_and_split(self, file_path: str):
         try:

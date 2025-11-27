@@ -1,0 +1,9 @@
+title,content
+Getting Started with RAG (EN),This FastAPI backend supports RAG over uploaded documents. Create a knowledge base, upload docs, chunk, embed with Ollama, then query via chat endpoints.
+Bat dau voi RAG (VI),He thong FastAPI nay ho tro RAG tren tai lieu da upload. Tao knowledge base, tai file, cat chunk, embed bang Ollama, sau do dat cau hoi qua API chat.
+Ollama Setup (EN),Run Ollama locally on port 11434. Pull embeddinggemma and your chat model. In .env set OLLAMA_HOST=http://localhost:11434 when running on host.
+Cau hinh Ollama (VI),Chay Ollama o cong 11434 va pull model embeddinggemma + chat model. Trong .env de OLLAMA_HOST=http://localhost:11434 neu chay local.
+Document Upload Flow,"1) POST /v1/kb tao KB. 2) POST /v1/document?kb_id=<id> upload file. 3) POST /v1/chunking?document_id=<id> cat chunk. 4) POST /v1/embedding?document_id=<id> embed luu vector."
+Auth Flow,"Sign up: POST /v1/oauth/signup. Login: POST /v1/oauth/login lay access_token. Gui Bearer token trong Authorization cho cac endpoint bao ve."
+Chat Flow,"Tao chat: POST /v1/chat lay chat_id. Hoi dap: POST /v1/c/<chat_id>?question=... se tra loi bang model Ollama."
+Sample Questions,"EN: How do I upload, chunk, and embed docs? VI: Lam sao upload tai lieu, cat chunk va embed de hoi dap?"

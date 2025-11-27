@@ -6,18 +6,18 @@ from sqlmodel import select, desc, delete
 from fastapi.responses import JSONResponse
 
 from app.core.model import Message
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 from app.message.schema import MessageSchema, MessageResponse
 
 
 class MessageService:
     async def get_messages(self, session:AsyncSession):
         statement = select(Message).order_by(desc(Message.created_at))
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def get_message_from_chat_id(self, chat_id: str, session:AsyncSession):
         statement = select(Message).where(Message.chat_id == UUID(chat_id))
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def create_message(self, message: MessageSchema, session:AsyncSession):
         data_dict = message.model_dump()

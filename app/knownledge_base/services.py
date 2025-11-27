@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import HTTPException, Depends
 from sqlmodel import desc, select
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 from typing import Annotated
 from app.auth.schema import UserModel
 
@@ -31,7 +31,7 @@ class KnownledgeBaseService:
 
     async def get_all_knowledge_bases(self, session: AsyncSession):
         statement = select(KnowledgeBase).order_by(desc(KnowledgeBase.created_at))
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def update_knowledge_base(
         self, kb_id: str, user: UserModel, data_update: CreateKnowledgeBase, session: AsyncSession

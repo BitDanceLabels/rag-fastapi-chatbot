@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.core.model import Chat
 from sqlmodel import select, desc
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 from uuid import UUID
 from app.auth.schema import UserModel
 from app.utility.chat_history import SimpleRedisHistory
@@ -23,7 +23,7 @@ class ChatService:
 
     async def get_all_chat(self, session: AsyncSession):
         statement = select(Chat).order_by(desc(Chat.created_at))
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def get_chat_id(self, chat_id: str, session: AsyncSession):
         chat_uuid = UUID(chat_id)

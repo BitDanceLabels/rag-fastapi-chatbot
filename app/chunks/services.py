@@ -6,7 +6,7 @@ from app.chunks.schema import CreateChunk, ChunkResponse
 from app.document.schema import UpdateDocumentDB
 from sqlmodel import insert, select, desc
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 from app.core.model import Chunk
 from fastapi.responses import JSONResponse
 import logging
@@ -60,9 +60,9 @@ class ChunkService:
 
     async def get_all_chunks(self, session: AsyncSession) -> Page[ChunkResponse]:
             statement = select(Chunk).order_by(desc(Chunk.created_at))
-            return await apaginate(session, statement)
+            return await paginate(session, statement)
 
     async def get_chunk_from_doc_id(self, document_id: str, session: AsyncSession) -> Page[ChunkResponse]:
         statement = select(Chunk).where(Chunk.document_id == document_id)
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 

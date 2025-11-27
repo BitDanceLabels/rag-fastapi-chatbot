@@ -16,7 +16,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.core.model import Document
 from uuid import UUID
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import apaginate
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import desc, select
 from minio.error import MinioException
 from app.auth.schema import UserModel
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 class DocumentServices:
     async def get_all_document(self, session: AsyncSession) -> Page[DocumentDBResponse]:
         statement = select(Document).order_by(desc(Document.created_at))
-        return await apaginate(session, statement)
+        return await paginate(session, statement)
 
     async def get_document(self, document_id: str, session: AsyncSession) -> DocumentDBResponse:
         doc = await session.get(Document, UUID(document_id))
@@ -126,12 +126,13 @@ class DocumentServices:
         file_path = Path(object_path)
         ext = file_path.suffix.lower()
 
-        # Download to temp file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as temp_file:
-            minio_client.fget_object(
-                bucket_name=Config.BUCKET_NAME,
-                object_name=object_path,
-                file_path=temp_file.name,
-            )
-            temp_path = temp_file.name
+        # Download to temp file (close handle before fget_object to avoid WinError 32)
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+        temp_path = temp_file.name
+        temp_file.close()
+        minio_client.fget_object(
+            bucket_name=Config.BUCKET_NAME,
+            object_name=object_path,
+            file_path=temp_path,
+        )
         return temp_path

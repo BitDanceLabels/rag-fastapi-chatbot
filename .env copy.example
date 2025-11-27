@@ -1,0 +1,48 @@
+# Database
+DATABASE_URL_ASYNCPG_DRIVER=postgresql+asyncpg://postgres:123456@localhost:5432/aiservices
+DATABASE_URL_PSYCOPG_DRIVER=postgresql+psycopg://postgres:123456@localhost:5432/aiservices
+PSYCOPG_CONNECT=postgresql://postgres:123456@localhost:5432/aiservices
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=123456
+POSTGRES_DB=aiservices
+
+# MinIO
+MINIO_URL=localhost:9002   
+# API
+MINIO_ACCESS_KEY=bumbee-minio
+MINIO_SECRET_KEY=bumbee-minio
+BUCKET_NAME=friendifyai
+# MINIO_CONSOLE_URL=http://localhost:9001   
+# nếu muốn ghi chú
+
+# Redis / Celery (dùng redis làm broker/backend nếu không dùng Rabbit)
+REDIS_URL=redis://:Z7UusveZhNAzM53u@127.0.0.1:6379/0
+BROKER_URL=redis://:Z7UusveZhNAzM53u@127.0.0.1:6379/1
+BACKEND_URL=redis://:Z7UusveZhNAzM53u@127.0.0.1:6379/2
+
+# Nếu bạn muốn dùng RabbitMQ thay Redis cho Celery, đổi thành:
+# BROKER_URL=amqp://guest:Z7UusveZhNAzM53u@127.0.0.1:5672/
+# BACKEND_URL=redis://127.0.0.1:6379/2   (giữ redis làm backend)
+
+# Auth / Security
+SECRET_KEY=8daa26b9f0056717ab79c0652ccf9ba6878f18b7dea2e46a2457141a97b4162e
+SALT=90345b307d1dd2a9f731b1398d530f61ec570e6d7af045c68e39f0c58e451c83
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
+JTI_EXPIRY_SECOND=1209600
+
+# Email (nếu dùng xác thực/reset)
+MAIL_USERNAME=bitdance.work@gmail.com
+MAIL_PASSWORD=vrwy gptq ipqp lzah
+MAIL_FROM=bitdance.work@gmail.com
+MAIL_SERVER=smtp.gmail.com
+
+# Models / LLM
+EMBEDDING_MODEL=embeddinggemma
+LLM_MODEL=gpt-oss:20b-cloud
+OLLAMA_HOST=http://localhost:11434
+
+# App
+DOMAIN_NAME=http://localhost
+VERSION=v1
