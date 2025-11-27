@@ -212,3 +212,4 @@ Chunking & embedding: hiện làm thủ công qua endpoint /v1/chunking và /v1/
 
 - nếu lấy từ redis thì chưa đủ => nó tự xóa mà ta => nó phải lấy từ timeline đã lưu trong postgre chứ 
 
+# - tạo thêm 1 api để dùng docling +> thử nghiệm nó trích thông tin như nào đi 
