@@ -12,6 +12,8 @@ from app.chat.routes import chat_router
 from app.llm_model.routes import conversation_router
 from app.message.routes import message_router
 from app.openapi.api_key import api_key_router
+from app.search.routes_plus import search_plus_router
+from app.metadata.routes import metadata_router
 
 
 version_prefix = Config.VERSION
@@ -25,9 +27,9 @@ This is a backend service for a **Retrieval-Augmented Generation (RAG)** chatbot
 """,
     version="1.0.0",
     contact={
-        "name": "Hao Nguyen",
-        "url": "https://github.com/haontuhcmut",
-        "email": "nguyenminhhao1188@gmail.com",
+        "name": "NhutPham",
+        "url": "https://www.youtube.com/watch?v=UgsJ4HFX_gM",
+        "email": "nhutpm7777@gmail.com",
     },
     license_info={
         "name": "MIT License",
@@ -73,4 +75,10 @@ app.include_router(
 )
 app.include_router(
     api_key_router, prefix=f"/{version_prefix}/api-key", tags=["api_key"]
+)
+app.include_router(
+    search_plus_router, prefix=f"/{version_prefix}", tags=["search_plus"]
+)
+app.include_router(
+    metadata_router, prefix=f"/{version_prefix}", tags=["metadata"]
 )

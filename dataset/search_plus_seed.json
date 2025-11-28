@@ -1,0 +1,67 @@
+[
+  {
+    "id": "seed-design-honggil",
+    "actors": ["hong-gil", "nhutpham"],
+    "time_hint": "tháng trước",
+    "content_type": "chat",
+    "intent": "design",
+    "emotion": "neutral",
+    "file_refs": [
+      {
+        "file_name": "mockup-login.png",
+        "url": "minio://friendifyai/design/mockup-login.png",
+        "content_type": "image/png"
+      },
+      {
+        "file_name": "chatbot.csv",
+        "url": "minio://friendifyai/tmp/chatbot.csv",
+        "content_type": "text/csv"
+      }
+    ],
+    "labels": {
+      "topic": "ui-mockup",
+      "project": "app-x",
+      "summary": "Thiết kế login do Hong-gil gửi, nhắc deadline"
+    }
+  },
+  {
+    "id": "seed-contract",
+    "actors": ["partner-a", "nhutpham"],
+    "time_hint": "mấy hôm trước",
+    "content_type": "doc",
+    "intent": "contract",
+    "emotion": "formal",
+    "file_refs": [
+      {
+        "file_name": "nda_partner_a.pdf",
+        "url": "minio://friendifyai/contracts/nda_partner_a.pdf",
+        "content_type": "application/pdf"
+      }
+    ],
+    "labels": {
+      "topic": "NDA",
+      "legal": true,
+      "summary": "Hợp đồng NDA gửi gần đây"
+    }
+  },
+  {
+    "id": "seed-travel-photo",
+    "actors": ["nhutpham"],
+    "time_hint": "6 tháng",
+    "content_type": "image",
+    "intent": "memory",
+    "emotion": "happy",
+    "file_refs": [
+      {
+        "file_name": "travel-beach.jpg",
+        "url": "minio://friendifyai/photos/travel-beach.jpg",
+        "content_type": "image/jpeg"
+      }
+    ],
+    "labels": {
+      "topic": "travel",
+      "scene": "beach",
+      "summary": "Ảnh đi du lịch nước ngoài (biển, khách sạn)"
+    }
+  }
+]
