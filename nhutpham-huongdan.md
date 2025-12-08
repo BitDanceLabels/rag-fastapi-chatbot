@@ -52,6 +52,8 @@ Sau khi migration thành công, bảng user sẽ được tạo và bạn signup
 
 rồi uvicorn app.main:app --reload --host 0.0.0.0 --port 8008
 
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8008
+
 
 
 Kiểm tra:
