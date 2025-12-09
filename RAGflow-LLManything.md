@@ -235,6 +235,528 @@ reembed_post(site_id, post_id)
 reembed_all_for_site(site_id)
 
 để bạn quăng thẳng vô kiến trúc “nhà máy sáng tạo” của mình, không phải nghĩ lại flow.
+
+# 
+
+@app.post("/maintenance/reembed/post/{post_id}", response_model=ReembedPostOut)
+async def reembed_post(
+    post_id: str,
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Gọi corebase lấy content/chunks của post
+    # 2. Gọi embedding + upsert vector cho từng chunk
+    # count = rag_service.reembed_post(ctx.site_id, post_id)
+
+    count = 6  # mock
+
+    return ReembedPostOut(
+        post_id=post_id,
+        chunks_processed=count,
+        status="ok",
+    )
+    
+@app.get("/search", response_model=SearchResponse)
+async def search_all(
+    q: str = Query(..., description="Query string"),
+    tags: Optional[str] = Query(None, description="Comma separated tags"),
+    type: Literal["all", "chat", "post", "event"] = "all",
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Parse tags
+    tag_list = tags.split(",") if tags else []
+
+    # 2. Gọi corebase / rag_service search
+    # results_raw = search_service.search(
+    #     site_id=ctx.site_id,
+    #     q=q,
+    #     tags=tag_list,
+    #     type=type,
+    # )
+
+    results: List[SearchResult] = [
+        SearchResult(
+            type="post",
+            id="post_mock",
+            score=0.9,
+            title="Mock RAG post",
+            snippet="Đây là post mock...",
+        )
+    ]
+
+    return SearchResponse(results=results)
+from fastapi import FastAPI, Depends, Query
+from pydantic import BaseModel
+from typing import List, Optional, Literal, Any
+
+app = FastAPI(title="RAG Chatbot Extension API")
+
+# ==== SCHEMAS ====
+
+class ChatMessageIn(BaseModel):
+    thread_id: str
+    text: str
+    role: Literal["user", "assistant", "system"] = "user"
+
+
+class SuggestedPost(BaseModel):
+    post_id: str
+    title: str
+    score: float
+
+
+class ChatMessageOut(BaseModel):
+    message_id: str
+    thread_id: str
+    hashtags: List[str] = []
+    suggested_posts: List[SuggestedPost] = []
+
+
+class GeneratePostIn(BaseModel):
+    thread_id: str
+    channel: str = "blog"
+    topic_hint: Optional[str] = None
+
+
+class GeneratePostOut(BaseModel):
+    post_id: str
+    title: str
+    content: str
+    status: str = "draft"
+
+
+class UpdatePostIn(BaseModel):
+    thread_id: str
+    apply_change: bool = True
+
+
+class UpdatePostOut(BaseModel):
+    post_id: str
+    old_version: int
+    new_version: int
+    summary_change: str
+    content_preview: str
+
+
+class SearchResult(BaseModel):
+    type: Literal["chat", "post", "event"]
+    id: str
+    score: float
+    title: Optional[str] = None
+    snippet: Optional[str] = None
+    extra: Optional[Any] = None
+
+
+class SearchResponse(BaseModel):
+    results: List[SearchResult]
+
+
+class ReembedPostOut(BaseModel):
+    post_id: str
+    chunks_processed: int
+    status: str
+
+
+# ==== DEPENDENCIES (context lấy từ corebase / gateway) ====
+
+
+class RequestContext(BaseModel):
+    site_id: str
+    user_id: str
+
+
+def get_context() -> RequestContext:
+    """
+    Ở hệ thực tế, bạn sẽ lấy site_id / user_id
+    từ JWT hoặc từ corebase gateway.
+    Ở đây mock cứng cho đơn giản.
+    """
+    return RequestContext(site_id="site_demo", user_id="user_demo")
+
+
+# ==== ROUTES ====
+
+
+@app.post("/chat/messages", response_model=ChatMessageOut)
+async def ingest_chat_message(
+    payload: ChatMessageIn,
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Extract hashtag
+    import re
+    hashtags = re.findall(r"#(\w+)", payload.text)
+
+    # 2. Gọi corebase lưu message
+    # message_id = corebase.chat.create_message(
+    #     site_id=ctx.site_id,
+    #     user_id=ctx.user_id,
+    #     thread_id=payload.thread_id,
+    #     text=payload.text,
+    #     role=payload.role,
+    #     hashtags=hashtags,
+    # )
+
+    message_id = "msg_mock"  # TODO: replace by corebase
+
+    # 3. Gọi embedding service + lưu chunk (qua corebase)
+    # vec = embedding_client.embed(payload.text)
+    # corebase.chunks.upsert_chunk(
+    #     site_id=ctx.site_id,
+    #     thread_id=payload.thread_id,
+    #     message_id=message_id,
+    #     text=payload.text,
+    #     embedding=vec,
+    # )
+
+    # 4. Tìm bài post liên quan (optional)
+    # suggested_posts = rag_service.suggest_posts(ctx.site_id, payload.text, hashtags)
+    suggested_posts: List[SuggestedPost] = []
+
+    return ChatMessageOut(
+        message_id=message_id,
+        thread_id=payload.thread_id,
+        hashtags=hashtags,
+        suggested_posts=suggested_posts,
+    )
+
+
+@app.post("/posts/generate-from-thread", response_model=GeneratePostOut)
+async def generate_post_from_thread(
+    payload: GeneratePostIn,
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Lấy messages từ corebase
+    # messages = corebase.chat.get_thread_messages(ctx.site_id, payload.thread_id)
+
+    # 2. Gọi RAG + LLM gen post
+    # title, content = rag_service.generate_post_from_messages(
+    #     site_id=ctx.site_id,
+    #     messages=messages,
+    #     channel=payload.channel,
+    #     topic_hint=payload.topic_hint,
+    # )
+
+    title = "Mock title RAG post"
+    content = "Mock content generated from thread."
+
+    # 3. Lưu post qua corebase
+    # post_id = corebase.posts.create_post(
+    #     site_id=ctx.site_id,
+    #     user_id=ctx.user_id,
+    #     title=title,
+    #     content=content,
+    #     channel=payload.channel,
+    # )
+
+    post_id = "post_mock"
+
+    # 4. Chunk + embed + lưu chunk (qua corebase)
+    # rag_service.index_post(ctx.site_id, post_id, content)
+
+    return GeneratePostOut(
+        post_id=post_id,
+        title=title,
+        content=content,
+        status="draft",
+    )
+
+
+@app.post("/posts/{post_id}/update-from-thread", response_model=UpdatePostOut)
+async def update_post_from_thread(
+    post_id: str,
+    payload: UpdatePostIn,
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Lấy post + messages liên quan từ corebase
+    # post = corebase.posts.get_post(ctx.site_id, post_id)
+    # messages = corebase.chat.get_thread_messages(ctx.site_id, payload.thread_id)
+
+    # 2. RAG + LLM gen bản updated
+    # updated_content, summary_change = rag_service.update_post_with_messages(
+    #     site_id=ctx.site_id,
+    #     post=post,
+    #     messages=messages,
+    # )
+
+    updated_content = "Mock updated content"
+    summary_change = "Mock summary of change."
+
+    old_version = 3
+    new_version = 4
+
+    if payload.apply_change:
+        # 3. Lưu revision + update post + re-embed chunk
+        # corebase.posts.create_revision(...)
+        # corebase.posts.update_post_content(...)
+        # rag_service.reembed_post(ctx.site_id, post_id, updated_content)
+        pass
+
+    return UpdatePostOut(
+        post_id=post_id,
+        old_version=old_version,
+        new_version=new_version,
+        summary_change=summary_change,
+        content_preview=updated_content,
+    )
+
+
+@app.get("/search", response_model=SearchResponse)
+async def search_all(
+    q: str = Query(..., description="Query string"),
+    tags: Optional[str] = Query(None, description="Comma separated tags"),
+    type: Literal["all", "chat", "post", "event"] = "all",
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Parse tags
+    tag_list = tags.split(",") if tags else []
+
+    # 2. Gọi corebase / rag_service search
+    # results_raw = search_service.search(
+    #     site_id=ctx.site_id,
+    #     q=q,
+    #     tags=tag_list,
+    #     type=type,
+    # )
+
+    results: List[SearchResult] = [
+        SearchResult(
+            type="post",
+            id="post_mock",
+            score=0.9,
+            title="Mock RAG post",
+            snippet="Đây là post mock...",
+        )
+    ]
+
+    return SearchResponse(results=results)
+
+
+@app.post("/maintenance/reembed/post/{post_id}", response_model=ReembedPostOut)
+async def reembed_post(
+    post_id: str,
+    ctx: RequestContext = Depends(get_context),
+):
+    # 1. Gọi corebase lấy content/chunks của post
+    # 2. Gọi embedding + upsert vector cho từng chunk
+    # count = rag_service.reembed_post(ctx.site_id, post_id)
+
+    count = 6  # mock
+
+    return ReembedPostOut(
+        post_id=post_id,
+        chunks_processed=count,
+        status="ok",
+    )
+chỉ làm API là được, phần quản lý database và multi tenant đã có corebase quản lý rồi
+
+Ok, vậy coi như:
+
+Corebase = lo hết vụ DB, multi-tenant, quyền, id, v.v.
+
+Service này = chỉ cần API FastAPI để:
+
+nhận chat
+
+gọi LLM/embedding
+
+gọi corebase để lưu / update
+
+trả kết quả cho frontend/chatbot.
+
+Mình gói lại thành bộ API tối thiểu + code skeleton FastAPI cho bạn feed vào Vibecode luôn.
+
+1. Nhóm API cần có
+1. POST /chat/messages – Ingest 1 tin nhắn chat
+
+Dùng khi user chat với RAG chatbot.
+
+Nhiệm vụ:
+
+extract #tag
+
+embed text
+
+gọi corebase để:
+
+lưu message
+
+lưu chunk + embedding
+
+(option) tìm post liên quan, trả về gợi ý.
+
+Request body (ví dụ):
+
+{
+  "thread_id": "th_123",
+  "text": "Hôm nay mình muốn chỉnh flow #RAG để log đầy đủ event update bài post.",
+  "role": "user"
+}
+
+
+Response (ví dụ):
+
+{
+  "message_id": "msg_456",
+  "thread_id": "th_123",
+  "hashtags": ["RAG"],
+  "suggested_posts": [
+    {
+      "post_id": "post_001",
+      "title": "Xây nhà máy sáng tạo với RAG",
+      "score": 0.86
+    }
+  ]
+}
+
+2. POST /posts/generate-from-thread – Gen bài post mới từ 1 thread
+
+Dùng khi bạn muốn: “Từ đống chat/ghi chú trong thread này → gen 1 bài post mới”.
+
+Request body:
+
+{
+  "thread_id": "th_123",
+  "channel": "blog", 
+  "topic_hint": "RAG content factory"
+}
+
+
+Response:
+
+{
+  "post_id": "post_001",
+  "title": "Xây nhà máy sáng tạo RAG cho content",
+  "content": "....",
+  "status": "draft"
+}
+
+
+Bên trong route:
+
+Gọi corebase lấy toàn bộ message trong thread.
+
+RAG + LLM gen bài post mới.
+
+Chunk + embed + gọi corebase lưu post + chunks.
+
+3. POST /posts/{post_id}/update-from-thread – Update bài post từ chat/note
+
+Dùng khi: “Quét lại bài cũ và update bằng notes mới trong thread”.
+
+Request body:
+
+{
+  "thread_id": "th_123",
+  "apply_change": true  // nếu false thì chỉ preview, không lưu
+}
+
+
+Response:
+
+{
+  "post_id": "post_001",
+  "old_version": 3,
+  "new_version": 4,
+  "summary_change": "Thêm phần nói về event log và re-embedding.",
+  "content_preview": "...."
+}
+
+
+Bên trong:
+
+Gọi corebase lấy:
+
+nội dung post hiện tại
+
+các chat/notes liên quan (thread + tag).
+
+RAG context → LLM gen bản updated.
+
+Nếu apply_change=true:
+
+gọi corebase:
+
+tạo post_revision
+
+update post hiện tại
+
+cập nhật chunks (detect phần changed → re-embed & upsert).
+
+ghi event POST_UPDATED.
+
+4. GET /search – Search everything (chat + post + event)
+
+Query params:
+
+q: text query
+
+tags: optional, VD: tags=RAG,ContentFactory
+
+type: optional (all|chat|post|event)
+
+Response:
+
+{
+  "results": [
+    {
+      "type": "post",
+      "id": "post_001",
+      "title": "Xây nhà máy sáng tạo RAG",
+      "snippet": "....",
+      "score": 0.91
+    },
+    {
+      "type": "chat",
+      "id": "msg_456",
+      "thread_id": "th_123",
+      "snippet": "Hôm nay mình muốn chỉnh flow #RAG...",
+      "score": 0.87
+    }
+  ]
+}
+
+
+Bên trong:
+
+Gọi corebase search (fulltext + vector).
+
+Merge/gộp kết quả → trả về unified list.
+
+5. POST /maintenance/reembed/post/{post_id} – Re-embed lại các chunk của 1 post
+
+Dùng khi:
+
+bạn đổi embedding model
+
+hoặc muốn refresh embedding cho post đó.
+
+Request body (optional):
+
+{
+  "dry_run": false
+}
+
+
+Response:
+
+{
+  "post_id": "post_001",
+  "chunks_processed": 6,
+  "status": "ok"
+}
+
+
+Bên trong:
+
+Gọi corebase lấy danh sách chunks của post.
+
+Loop từng chunk:
+
+embed lại chunk.text
+
+upsert vector (vector_id cố định).
+
+Cho chạy background / task queue càng tốt.
+
 # => lưu vô database => khi cần thiết bọc dữ liệu sau 
 
 # Tìm kiếm công nghệ => để embedding nối tiếp - Re embedding => chunk và id chunk và embedding lại định kỳ là xong 
