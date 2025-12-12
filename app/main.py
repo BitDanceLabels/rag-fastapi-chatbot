@@ -14,6 +14,8 @@ from app.message.routes import message_router
 from app.openapi.api_key import api_key_router
 from app.search.routes_plus import search_plus_router
 from app.metadata.routes import metadata_router
+from app.rag.routes import rag_super_router
+from app.gateway_register import register_gateway
 
 
 version_prefix = Config.VERSION
@@ -82,3 +84,11 @@ app.include_router(
 app.include_router(
     metadata_router, prefix=f"/{version_prefix}", tags=["metadata"]
 )
+app.include_router(
+    rag_super_router, prefix=f"/{version_prefix}", tags=["rag_super"]
+)
+
+
+@app.on_event("startup")
+async def _register_gateway():
+    await register_gateway(app)
